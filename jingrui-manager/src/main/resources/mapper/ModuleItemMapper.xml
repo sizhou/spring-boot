@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haier.dao.ModuleItemMapper">
+
+
+    <insert id="insert" parameterType="com.haier.dao.ModuleItemMapper">
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT INTO module_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="entity.moduleId != null">
+                module_id,
+            </if>
+          <if test="entity.itemName !=null and entity.itemName !=''">
+              item_name,
+          </if>
+            <if test="entity.contentType!=null and entity.contentType!=''">
+                content_type,
+            </if>
+            <if test="entity.headlines !=null and entity.headlines!=''">
+                headlines,
+            </if>
+            <if test="entity.thumUrl !=null and entity.thumUrl!=''">
+                thum_url,
+            </if>
+            <if test=" entity.backgroundUrl!=null and  entity.backgroundUrl!=''">
+                background_url,
+            </if>
+            <if test="entity.detailUrl!=null and entity.detailUrl!=''">
+                detail_url,
+            </if>
+            <if test="entity.detailDesc!=null and  entity.detailDesc!=''">
+                detail_desc,
+            </if>
+            <if test="entity.moduleOrder!=null">
+                module_order,
+            </if>
+        <if test="entity.createdBy!=null">
+            created_by,
+        </if>
+        <if test="entity.createdTime!=null">
+         created_time,
+        </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="entity.moduleId != null">
+                #{entity.moduleId},
+            </if>
+            <if test="entity.itemName !=null and entity.itemName !=''">
+                #{entity.itemName},
+            </if>
+            <if test="entity.contentType!=null and entity.contentType!=''">
+                #{entity.contentType},
+            </if>
+            <if test="entity.headlines !=null and entity.headlines!=''">
+                #{entity.headlines},
+            </if>
+            <if test="entity.thumUrl !=null and entity.thumUrl!=''">
+                #{entity.thumUrl},
+            </if>
+            <if test=" entity.backgroundUrl!=null and  entity.backgroundUrl!=''">
+                #{entity.backgroundUrl},
+            </if>
+            <if test="entity.detailUrl!=null and entity.detailUrl!=''">
+                #{entity.detailUrl},
+            </if>
+            <if test="entity.detailDesc!=null and  entity.detailDesc!=''">
+                #{entity.detailDesc},
+            </if>
+            <if test="entity.moduleOrder!=null">
+                #{entity.moduleOrder},
+            </if>
+            <if test="entity.createdBy!=null">
+                #{entity.createdBy},
+            </if>
+            <if test="entity.createdTime!=null">
+                #{entity.createdTime},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateByPrimary" parameterType="com.haier.model.ModuleItemEntity">
+        UPDATE module_item
+        <set>
+            <if test=" entity.itemName!=null and entity.itemName!=''">
+                item_name = #{entity.itemName},
+            </if>
+            <if test="entity.contentType!=null and entity.contentType!=''">
+                content_type = #{entity.contentType},
+            </if>
+            <if test="entity.headlines !=null and entity.headlines!=''">
+                headlines = #{entity.headlines},
+            </if>
+            <if test=" entity.thumUrl!=null and entity.thumUrl!=''">
+                thum_url = #{entity.thumUrl},
+            </if>
+            <if test=" entity.backgroundUrl!=null and entity.backgroundUrl!=''">
+                background_url = #{entity.backgroundUrl},
+            </if>
+            <if test=" entity.detailUrl!=null and entity.detailUrl!=''">
+                detail_url = #{entity.detailUrl},
+            </if>
+            <if test=" entity.detailDesc!=null and entity.detailDesc!=''">
+                detail_desc = #{entity.detailDesc},
+            </if>
+            <if test=" entity.moduleOrder!=null">
+                module_order = #{entity.moduleOrder}
+            </if>
+            <if test="entity.status != null and entity.status > 0">
+                status = #{entity.status}
+            </if>
+            <if test=" entity.updatedBy!=null">
+                updated_by #{entity.updatedBy}
+            </if>
+            <if test=" entity.updatedTime!=null">
+                updated_time #{entity.updatedTime}
+            </if>
+        </set>
+        WHERE
+            id = #{entity.id}
+    </update>
+
+    <update id="deleteById" parameterType="java.lang.Long">
+        UPDATE module_item SET is_deleted=1 WHERE id=#{id}
+    </update>
+
+    <sql id="conditionSQL">
+        <where>
+            <if test="po.id != null and po.id >0">
+                and id=#{po.id}
+            </if>
+            <if test="po.moduleId !=null and po.moduleId > 0">
+                and module_id=#{po.moduleId}
+            </if>
+            <if test="po.searchAttr !=null and po.searchAttr != ''">
+                and item_name LIKE #{po.searchAttr}
+            </if>
+            <if test="po.status !=null and po.status > 0">
+                and status=#{po.status}
+            </if>
+            <if test="po.isDeleted!=null ">
+                AND is_deleted =#{po.isDeleted}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getModuleItemsBy" resultType="com.haier.model.ModuleItemEntity">
+        SELECT
+        id as id,
+        module_id as moduleId,
+        item_name as itemName,
+        headlines as headlines,
+        content_type as contentType,
+        thum_url AS thumUrl,
+        background_url as backgroundUrl,
+        detail_url as detailUrl,
+        detail_desc as detailDesc,
+        module_order as moduleOrder,
+        status as status
+         FROM module_item
+        <include refid="conditionSQL"/>
+        ORDER BY module_order desc
+        <if test="po.startRow != null and po.startRow > -1 and po.pageSize != null and po.pageSize > 0">
+            LIMIT #{po.startRow,jdbcType=INTEGER}, #{po.pageSize,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="getCountBy" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+         FROM module_item
+         <include refid="conditionSQL"/>
+    </select>
+
+
+</mapper>
